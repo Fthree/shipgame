@@ -32,4 +32,11 @@ public class IntVector2
         a.y += b.y;
         return a;
     }
+
+    public static IntVector2 operator *(IntVector2 a, int b)
+    {
+        a.x *= b;
+        a.y *= b;
+        return a;
+    }
 }

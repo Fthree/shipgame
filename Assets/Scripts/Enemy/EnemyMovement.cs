@@ -6,9 +6,11 @@ public class EnemyMovement : MonoBehaviour {
 
     public float torque;
     public float movementSpeed;
+    [Range(0, 10)]
     public float turningIntervalSeconds = 2;
     public EnemyTurningDir turningDir = EnemyTurningDir.RIGHT;
     public CannonSide currentFiringSide = CannonSide.NONE;
+    public EnemyType type;
 
     GameTimer turningTimer;
     GameObject target;
@@ -22,11 +24,21 @@ public class EnemyMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        //This timer will just swap the turning direction every X seconds
-        if (turningTimer.timerPassed)
+        //Will be CIRCULAR by default
+        if(type.Equals(EnemyType.SLITHER))
         {
-            turningDir = EnemyUtil.swapDirection(turningDir);
-            turningTimer.ResetAndStartTimer(turningIntervalSeconds);
+            //This timer will swap the turning direction every X seconds provided this is a slither type
+            if (turningTimer.timerPassed)
+            {
+                turningDir = EnemyUtil.swapDirection(turningDir);
+                turningTimer.ResetAndStartTimer(Random.Range(turningIntervalSeconds / 2, turningIntervalSeconds));
+            }
+        }
+
+        if (type.Equals(EnemyType.STRAIGHT))
+        {
+            //Don't turn
+            torque = 0;
         }
 
         //No target? just move simply
@@ -60,5 +72,10 @@ public class EnemyMovement : MonoBehaviour {
     public void UpdateTarget(GameObject target)
     {
         this.target = target;
+    }
+
+    public void SetType(EnemyType type)
+    {
+        this.type = type;
     }
 }

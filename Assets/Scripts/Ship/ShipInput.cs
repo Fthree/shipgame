@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//Handles the input as booleans for the player ship
 public class ShipInput {
 
     public bool forward = false, reverse = false, right = false, left = false;

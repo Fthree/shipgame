@@ -8,56 +8,50 @@ public class CannonBall : MonoBehaviour
 
     private float speedThreshold;
 
-    private string owner;
+    GameTimer startTimer;
 
-    private string enemy;
-
-    // Use this for initialization
-    public void Initialize(Vector2 initialDirection, string owner, string enemy, float speed, float threshold)
+    public void Initialize(Vector2 initialDirection, float speed, float threshold)
     {
-        this.owner = owner;
-        this.enemy = enemy;
+        //speed threshold will define when we destroy the ball
         speedThreshold = threshold;
+        //Shoot it off in some direction at some speed initially
         GetComponent<Rigidbody2D>().AddForce(initialDirection * speed);
+        startTimer = new GameTimer();
+        startTimer.ResetAndStartTimer(2);
     }
 
-    // Update is called once per frame
     void Update()
     {
         Rigidbody2D rigidBody = GetComponent<Rigidbody2D>();
+        //Is the splash currently active?
         if (splash != null)
         {
+            //Has the splash finished with all the particles?
             if (!splash.isAlive())
             {
-                Debug.Log("dead");
+                Debug.Log("Cannon ball " + name + " missed");
                 Destroy(splash.gameObject);
                 Destroy(gameObject);
             }
         } else
         {
-            if (rigidBody.velocity.magnitude < speedThreshold)
+            //Is the current velocity magnitude under the threshold and has the timer passed?
+            if (rigidBody.velocity.magnitude < speedThreshold && startTimer.timerPassed)
             {
+                //Create a splash effect and stop rendering the object
                 splash = Instantiate(splashPrefab, transform.position, transform.rotation) as Splash;
                 GetComponentInChildren<SpriteRenderer>().enabled = false;
             }
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    public void Cleanup()
     {
-        if(other.tag.Equals(owner))
+        if(splash != null)
         {
-            return;
+            Destroy(splash.gameObject);
         }
-        if (other.tag.Equals(enemy))
-        {
-            if (splash != null)
-            {
-                //If the splash exists, remove it
-                Destroy(splash.gameObject);
-            }
-            Destroy(other.gameObject); //Destroy the other object or do whatever to it
-            Destroy(gameObject); //Destroy the cannon ball
-        }
+
+        Destroy(gameObject);
     }
 }

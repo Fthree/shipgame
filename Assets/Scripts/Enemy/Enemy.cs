@@ -5,31 +5,44 @@ public class Enemy : MonoBehaviour {
 
     public float forwardSpeed = 5f;
     public float torque = 20f;
+    [Range(0, 5)]
     public float firingIntervalSeconds = 1;
 
+    public HitSplash splashPrefab;
+    HitSplash splash;
+
     EnemyMovement movement;
+    
+    //Forces time between shots
     GameTimer firingTimer;
 
     Cannon leftCannon;
     Cannon rightCannon;
 
+    Health health;
+
+    //Current side we're firing on
     CannonSide currentCannonSide;
 
     GameObject target;
     bool attacking;
 
     private static string ship = "Enemy";
-    private static string enemy = "Player";
+    private static string player = "Player";
+    private static string cannonBall = "CannonBall";
+
+    Cannon[] cannons;
 
     void Start()
     {
+        //Create some health for the enemy
+        health = GetComponent<Health>();
+        health.Initialize(Random.Range(10, 50)); //50hp
+
         movement = GetComponent<EnemyMovement>();
-        Cannon[] cannons = GetComponentsInChildren<Cannon>();
+        cannons = GetComponentsInChildren<Cannon>();
         leftCannon = GeneralUtil.getCannon(CannonDirections.LEFT, cannons);
         rightCannon = GeneralUtil.getCannon(CannonDirections.RIGHT, cannons);
-
-        leftCannon.Initialize(ship, enemy);
-        rightCannon.Initialize(ship, enemy);
 
         firingTimer = new GameTimer();
         firingTimer.ResetAndStartTimer(firingIntervalSeconds);
@@ -37,9 +50,19 @@ public class Enemy : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        if(splash != null)
+        {
+            if(!splash.isAlive())
+            {
+                Destroy(splash.gameObject);
+            }
+        }
+
+        //We have a targer to follow
         if(attacking)
         {
-            target = GameObject.FindGameObjectWithTag(enemy);
+            //Our enemy is the player, find and follow it
+            target = GameObject.FindGameObjectWithTag(player);
             movement.UpdateTarget(target);
         }
         else
@@ -61,16 +84,34 @@ public class Enemy : MonoBehaviour {
                 rightCannon.Fire(transform.position);
             }
 
-            firingTimer.ResetAndStartTimer(firingIntervalSeconds);
+            firingTimer.ResetAndStartTimer(Random.Range(0, firingIntervalSeconds));
         }
-        
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
+          
         if(isPlayerTag(other.tag))
         {
             attacking = true;
+        }
+
+        if (other.gameObject.tag.Equals(cannonBall) && !tag.Equals("Trigger"))
+        {
+            if (!GeneralUtil.doesBallMatchCannons(other.gameObject, cannons))
+            {
+                //If not one of ours, we've been hit, remove the cannon ball
+                Debug.Log("Enemy shot by player");
+                Quaternion splashOrientation = other.transform.rotation;
+                //splash = Instantiate(splashPrefab, transform.position, transform.rotation) as HitSplash;
+                //splash.transform.Rotate(-other.transform.forward);
+                Destroy(other.gameObject);
+                if (!health.decreaseHealth(10))
+                {
+                    Debug.Log("Enemy is dead!!!");
+                    Destroy(gameObject);
+                }  
+            }
         }
     }
 
@@ -84,6 +125,6 @@ public class Enemy : MonoBehaviour {
 
     private bool isPlayerTag(string tag)
     {
-        return tag.Equals(enemy);
+        return tag.Equals(player);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyUtil {
     public static EnemyTurningDir swapDirection(EnemyTurningDir current)
@@ -39,6 +39,7 @@ public class EnemyUtil {
         }
         else
         {
+            //There's nothing to our left or right, keep moving and turning
             moveAndTurn(current, torque, forwardSpeed, currentDir);
             return CannonSide.NONE;
         }

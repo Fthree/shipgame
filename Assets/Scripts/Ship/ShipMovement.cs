@@ -16,25 +16,47 @@ public class ShipMovement : MonoBehaviour {
     {
         input.Update();
 
+        Rigidbody2D currentRB = GetComponent<Rigidbody2D>();
+
         if (input.forward)
         {
-            GetComponent<Rigidbody2D>().AddForce(transform.up * speed);
+            forward(currentRB);
         }
 
         if(input.reverse)
         {
-            GetComponent<Rigidbody2D>().AddForce(-transform.up * speed);
+            reverse(currentRB);
         }
 
         if (input.left)
         {
-            GetComponent<Rigidbody2D>().AddTorque(torque);
+            turnLeft(currentRB);
         }
 
         if (input.right)
         {
-            GetComponent<Rigidbody2D>().AddTorque(-torque);
+            turnRight(currentRB);
         }
+    }
+
+    private void turnLeft(Rigidbody2D current)
+    {
+        current.AddTorque(torque);
+    }
+
+    private void turnRight(Rigidbody2D current)
+    {
+        current.AddTorque(-torque);
+    }
+
+    private void reverse(Rigidbody2D current)
+    {
+        current.AddForce(-transform.up * speed);
+    }
+
+    private void forward(Rigidbody2D current)
+    {
+        current.AddForce(transform.up * speed);
     }
 
     public Vector2 getPosition()
