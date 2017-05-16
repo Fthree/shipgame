@@ -37,19 +37,37 @@ public class MapChunkHandler : MonoBehaviour {
         //Create the chunk game object
         GameObject chunkObject = new GameObject();
 
-        //Build chunk collider, this will be used to trigger the chunk handler's chunk mover
-        BoxCollider2D collider = chunkObject.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-        collider.size = new Vector3(chunkSize * 2, chunkSize * 2);
-        collider.offset = new Vector3(offset.x, offset.y);
+        buildChunkCollider(chunkObject, chunkSize, offset, position);
         
-        //Create map chunk script and add it to the game object and build
+        MapChunk chunk = buildChunkScript(chunkObject, chunkSize, offset, position, wavesAndWeights, mapTransform);
+
+        //Add to list of current chunks
+        chunks.Add(chunk);
+    }
+
+    void buildChunkCollider(GameObject chunkObject, int chunkSize, IntVector2 offset, MapChunkPosition position)
+    {
+        if (position.Equals(MapChunkPosition.TOP) ||
+           position.Equals(MapChunkPosition.BOTTOM) ||
+           position.Equals(MapChunkPosition.LEFT) ||
+           position.Equals(MapChunkPosition.RIGHT))
+        {
+            //Build chunk collider, this will be used to trigger the chunk handler's chunk mover
+            BoxCollider2D collider = chunkObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = new Vector3(chunkSize * 2, chunkSize * 2);
+            collider.offset = new Vector3(offset.x, offset.y);
+        }
+    }
+
+    //Create a map chunk at a specific position
+    MapChunk buildChunkScript(GameObject chunkObject, int chunkSize, IntVector2 offset, MapChunkPosition position, List<WavesAndWeights> wavesAndWeights, Transform mapTransform)
+    {
         MapChunk chunk = chunkObject.AddComponent<MapChunk>();
         chunk.build(chunkSize, offset, wavesAndWeights, mapTransform);
         chunk.setPosition(position);
 
-        //Add to list of current chunks
-        chunks.Add(chunk);
+        return chunk;
     }
 
     // Update is called once per frame
