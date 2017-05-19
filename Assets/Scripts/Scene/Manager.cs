@@ -2,8 +2,11 @@
 using System.Collections;
 
 public class Manager : MonoBehaviour {
-
-	// Use this for initialization
+    //Manager needs to start the scene behaviour
+    //We want to be able to control scenes to some degree
+    //We want the player to be able to move around freely
+    //When the user is close to certain objects, triggers should set off specific attacks
+    //While exploring, enemies need to come out and attack the player or be around loot
 	void Start () {
 	
 	}
