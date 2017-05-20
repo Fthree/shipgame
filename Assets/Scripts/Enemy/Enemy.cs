@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class Enemy : MonoBehaviour {
@@ -33,11 +34,13 @@ public class Enemy : MonoBehaviour {
 
     Cannon[] cannons;
 
+    Action deathCallback;
+
     void Start()
     {
         //Create some health for the enemy
         health = GetComponent<Health>();
-        health.Initialize(Random.Range(10, 50)); //50hp
+        health.Initialize(UnityEngine.Random.Range(25, 50)); //50hp
 
         movement = GetComponent<EnemyMovement>();
         cannons = GetComponentsInChildren<Cannon>();
@@ -84,7 +87,7 @@ public class Enemy : MonoBehaviour {
                 rightCannon.Fire(transform.position);
             }
 
-            firingTimer.ResetAndStartTimer(Random.Range(0, firingIntervalSeconds));
+            firingTimer.ResetAndStartTimer(UnityEngine.Random.Range(0, firingIntervalSeconds));
         }
     }
 
@@ -109,6 +112,7 @@ public class Enemy : MonoBehaviour {
                 if (!health.decreaseHealth(10))
                 {
                     Debug.Log("Enemy is dead!!!");
+                    deathCallback();
                     Destroy(gameObject);
                 }  
             }
@@ -123,8 +127,13 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    private bool isPlayerTag(string tag)
+    bool isPlayerTag(string tag)
     {
         return tag.Equals(player);
+    }
+
+    public void onDeathDo(Action deathCallback)
+    {
+        this.deathCallback = deathCallback;
     }
 }

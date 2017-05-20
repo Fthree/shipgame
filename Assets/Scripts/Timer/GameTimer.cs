@@ -2,12 +2,12 @@
 
 public class GameTimer
 {
-    Timer turningTimer;
+    Timer timer;
     public bool timerPassed { get; set; }
 
     public void TimerElapsed(object source, ElapsedEventArgs e)
     {
-        turningTimer.Stop();
+        timer.Stop();
         timerPassed = true;
     }
 
@@ -19,14 +19,14 @@ public class GameTimer
 
     public void StartTimer()
     {
-        turningTimer.Start();
+        timer.Start();
     }
 
     public void ResetTimerNew(float intervalSeconds)
     {
-        turningTimer = new Timer();
-        turningTimer.Interval = intervalSeconds * 1000f;
-        turningTimer.Elapsed += new ElapsedEventHandler(TimerElapsed);
+        timer = new Timer();
+        timer.Interval = intervalSeconds * 1000f;
+        timer.Elapsed += new ElapsedEventHandler(TimerElapsed);
         timerPassed = false;
     }
 }

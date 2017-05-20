@@ -36,9 +36,7 @@ public class MapChunkHandler : MonoBehaviour {
 
         //Create the chunk game object
         GameObject chunkObject = new GameObject();
-
         buildChunkCollider(chunkObject, chunkSize, offset, position);
-        
         MapChunk chunk = buildChunkScript(chunkObject, chunkSize, offset, position, wavesAndWeights, mapTransform);
 
         //Add to list of current chunks
